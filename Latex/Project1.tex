@@ -1,0 +1,292 @@
+%\documentclass[11pt]{article}\sloppy
+\documentclass[a4paper,10pt]{scrartcl}\sloppy
+%\documentclass[a4paper,12pt,twoside]{book}\sloppy
+%\documentclass[article, 12pt, oneside]{memoir}\sloppy
+%\counterwithout{section}{chapter}
+%\setcounter{secnumdepth}{2}
+%\setlrmarginsandblock{2.9cm}{2.9cm}{*}
+%\setulmarginsandblock{3cm}{*}{1}
+%\checkandfixthelayout 
+%\usepackage[top=1in, bottom=1.25in, left=1.25in, right=1.25in]{geometry}
+\linespread{1.3}
+
+\clubpenalty=10000 
+\widowpenalty=10000
+
+
+%\parskip = 24pt
+%\usepackage{fullpage}
+
+\usepackage[pdfencoding=auto]{hyperref}
+
+\usepackage[utf8]{inputenc}
+
+%\usepackage{duomasterforside}
+
+
+\usepackage[english]{babel}
+\usepackage{graphicx} 
+\usepackage{amsthm, amsmath, amsfonts, bbold, amssymb, mathrsfs}
+
+\usepackage{fullpage}
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepgfplotslibrary{polar}
+\pgfplotsset{compat=newest}
+\usepackage{enumerate}
+\usepackage{tikz-cd}
+\usepackage[
+    backend=biber,
+    style=alphabetic,
+  ]{biblatex}
+\addbibresource{bibliography.bib}
+\usepackage{cleveref}
+
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{ALG}{Theorem}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+
+
+\theoremstyle{definition}
+\newtheorem{mydef}[thm]{Definition}
+\newtheorem{notat}[thm]{Notation}
+\newtheorem{rem}[thm]{Remark}
+\newtheorem{exa}[thm]{Example}
+\newtheorem{alg}[ALG]{Algorithm}
+
+\begin{document}
+
+\section{Theory}
+
+\subsection{The one-dimensional Poisson equation}
+We consider the one-dimensional Poisson equation with Dirichlet boundary conditions. That is, we are given a function $f\colon [0,1]\rightarrow \mathbb{R}$ and seek a function $u\colon [0,1]\rightarrow \mathbb{R}$ such that
+\begin{align}\label{eq:Poisson}
+-u''(x)=f(x), \textrm{ with } u(0)=u(1)=0.
+\end{align}
+
+To attack this problem, we do the following. We fix a positive integer $n$ and let $h:= 1/(n+1)$. Then we partition $[0,1]$ into $n+1$ subintervals $[x_i,x_{i+1}]$ such that $x_i=ih$ for all $i=0,\ldots,n+1$. Observe that the length of each interval is given by $h:= 1/(n+1)$. Assuming that $u$ is an exact solution to \cref{eq:Poisson}, we will find an approximation to $u$ which we label $v$. The function $v$ will be a function $v\colon [0,1]\rightarrow \mathbb{R}$ such that $v$ is linear on each interval $[x_i,x_{i+1}]$ and such that $v(x_i)\approx u(x_i)$ for all $i$. 
+ 
+ Our task is to find an ordered set of points $\{v_0,\ldots,v_{n+1}\}$ such that $v_i\approx u(x_i)$. Then $v(x_i):= v_i$ determines the approximation $v$ completely.
+ 
+ 
+ 
+
+
+%How should one determine good candidates for $\{v_0,\ldots,v_{n+1}\}$? A possibility is to go via a 3-step formula for $u''(x)$. Then the approximation for $u''(x_i)$ depends linearly on the three points $u(x_i)$, $u(x_{i-1})$ and $u(x_{i+1}) $. As a concequence of having $n+2$ grid points $x_i$, this approximation shall yield exactly $n$ points for $i=1,\ldots, n$. Indeed, the formula will not be defined for $x_0=0$ and $x_{n+1}=0$ because $x_{-1}$ and $x_{n+2}$ are not included in the problem.
+
+
+\subsection{Approximation to $u''(x)$}
+We now derive an approximation to $u''(x)$ using Taylor expansions. Consider the taylor expansions of $u$ about $x_i$:
+$$u(x_i\pm h)= u(x_i) \pm u'(x_i)h + \frac{u''(x_i)h^2}{2}+\mathcal{O}(h^3)$$
+It is seen from adding $u(x_i+h)$ and $u(x_i-h)$ that:
+$$u''(x_i)=\frac{u(x_{i+1})+u(x_{i-1})-2u(x_i)}{h^2}+ \mathcal{O}(h^2)$$
+Assuming that we have discretized $u$ and consider the points $u_i:=u(x_i)$, we can define a discrete axpproximation to $u''(x_i)$ as
+$$\frac{u_{i+1}+u_{i-1}-2u_i}{h^2}$$
+\noindent for $i=1,\ldots, n$.
+
+
+
+We now reformulat \cref{eq:Poisson} in terms of  the approximation of $u''(x)$. Let  $f_i=f(x_i)$. Then \cref{eq:Poisson} becomes:
+\begin{align}\label{eq:discPoisson}
+-\frac{v_{i+1}+v_{i-1}-2v_i}{h^2}=f_i, \quad v_0= v_{n+1} = 0, \quad i=1,\ldots, n
+\end{align}
+
+\noindent Solving this set of linear equations yields the ordered set $\{v_0,\ldots,v_{n+1}\}$ that we are after. The aim now is to solve this set of linear equations and obtain the approximation $v$ to $u$.
+
+\subsection{The one dimensional Poisson equation as a matrix equation}
+\noindent  Consider \cref{eq:discPoisson}. Multiplying both sides by $h^2$ yields the equivalent set of linear equations: 
+$$2v_i-v_{i+1}-v_{i-1}=h^2 f_i,  \quad i=1,\ldots, n$$
+\noindent Because we assume $v_0=v_{n+1}=0$, we can discard the equations that would otherwise be needed to solve for $v_0$ and $v_n$. In other words, we may discard the equations corresponding to $i=1$ and $i=n$. 
+
+We want to reformulate the remaining equations ($1<i<n$) into a matrix equation. We define the $n \times n$ matrix 
+$$A:=   \begin{pmatrix}
+   2 & -1 & 0 &\cdots   &0  \\
+   -1 & 2 & -1 &\ddots   & \vdots \\
+   0 & -1 & \ddots  &  \ddots   &0 \\
+   \vdots &  \ddots &\ddots & \ddots &-1 \\
+   0 & \cdots  &0  & -1  &2 \\
+  \end{pmatrix}
+$$
+and the vectors $v:= (v_1,\ldots, v_n)$ and $d:=h^2(f_1,\ldots, f_n)$. We have 
+\begin{align}\label{eq:Avb}
+Av= d,
+\end{align}
+\noindent as is seen from taking the dot product of the $i$'th row in $A$ with $v$.
+
+
+\subsection{An analytical solution to the one dimensional Poisson equation}
+
+Assume that $f(x) = 100e^{-10x} $.  We now show that ${u(x) = 1-(1-e^{-10})x -e^{-10x}}$ is an analytical solution to \cref{eq:Poisson} by insertion. We have
+\begin{align*}
+u'(x) &= 1-e^{-10}+10e^{-10 x}\\
+u''(x) &= -100e^{-10x}
+\end{align*}
+\noindent Hence $-u''(x)=f(x)$.
+
+\begin{rem} The above solution will be a point of reference for the numerical solution, so that we may verify the validity of the proposed numerical solution. That is, we shall compare the approximation $v$ to $u$ for different values of $n$.
+ 
+\end{rem}
+%  $$A:=   \begin{bmatrix}
+%   2 & -1 & 0 &\cdots &   \cdots  &0  \\
+%   -1 & 2 & \ddots &\ddots  &\ddots  & \vdots \\
+%   0 & \ddots & \ddots & \ddots&\ddots  &\vdots  \\
+%   \vdots & \ddots  &\ddots  &\ddots  &\ddots   &\vdots  \\
+%   \vdots & \ddots   & \ddots &\ddots & \ddots  &0 \\
+%   \vdots & \ddots   & \ddots & \ddots & 2 &-1 \\
+%   0 & \cdots & \cdots  &0  & -1  &2 \\
+%  \end{bmatrix}
+%  $$
+
+\subsection{Solving a general tridiagonal matrix equation}\label{generaltridiagmateq}
+
+A \textbf{tridiagonal matrix} is a square matrix whose only nonzero entries are the entries along the main diagonal and the entries along the diagonal directly above and the diagonal directly below the main diagonal. 
+
+Let temporarily $A$ be any $n\times n$ tridiagonal matrix with $n\geq 2$ and $v$ and $d$ be two $n$-dimensional vectors. Note that
+$$A=\begin{pmatrix}
+   b_1 & c_1 & 0 &  \cdots  &0  \\
+   a_1 & b_2 & c_2   &\ddots  & \vdots \\
+   0 & a_2 & \ddots   & \ddots   &0 \\
+   \vdots   & \ddots &\ddots & \ddots &c_{n-1} \\
+   0 & \cdots  &0  & a_{n-1}  &b_n \\
+\end{pmatrix}
+$$
+
+\noindent is uniquely determined by three vectors $a=(a_1,\ldots,a_{n-1})$, $b=(b_1,\ldots,b_n)$, and $c=(c_1,\ldots,c_{n-1})$.
+
+We seek to solve an equation of the form $Av=d$. That is, we seek to solve:
+\begin{align}\label{eq:matrixeq}
+\begin{pmatrix}
+   b_1 & c_1 & 0 &  \cdots  &0  \\
+   a_1 & b_2 & c_2   &\ddots  & \vdots \\
+   0 & a_2 & \ddots   & \ddots   &0 \\
+   \vdots   & \ddots &\ddots & \ddots &c_{n-1} \\
+   0 & \cdots  &0  & a_{n-1}  &b_n \\
+\end{pmatrix}
+\begin{pmatrix}
+v_1\\
+v_2\\
+\vdots\\
+\vdots\\
+v_n
+\end{pmatrix}
+=
+\begin{pmatrix}
+d_1\\
+d_2\\
+\vdots\\
+\vdots\\
+d_n
+\end{pmatrix}
+\end{align}
+
+
+\noindent This can be accomplished by row reducing the matrix:
+$$
+\begin{pmatrix}
+   b_1 & c_1 & 0   &  \cdots  &0  & d_1\\
+   a_1 & b_2 & c_2   &\ddots  & \vdots & \vdots \\
+   0 & a_2 & \ddots   & \ddots   &0  & d_ {n-2}\\
+   \vdots & \ddots    &\ddots & \ddots &c_{n-1} & d_ {n-1}\\
+   0 & \cdots &0  & a_{n-1}  &b_n & d_n\\
+\end{pmatrix}
+\sim
+\begin{pmatrix}
+   \beta_1 & c_1 & 0   &  \cdots  &0  & \delta_1\\
+   0 & \beta_2 & c_2   &\ddots  & \vdots & \vdots \\
+   \vdots  & 0 & \ddots   & \ddots   &0  & \delta_ {n-2}\\
+   \vdots& \ddots    &\ddots & \ddots &c_{n-1} & \delta_ {n-1}\\
+   0 & \cdots &\cdots  & 0  &\beta_n & \delta_n\\
+\end{pmatrix}
+$$
+\noindent Now we need to rid of the $a_i$'s one by one. The first row operation needed is then clearly $R_2\rightarrow R_2-\frac{a_1}{b_1}R_1$. And then we wish to generalize this pattern further. The general algorithm for this row reduction can be described as follows. We inductively update each row accordingly, and one at the time starting from above:
+\vbox{
+\begin{alg}\label{rowred}(Row reduction)
+\begin{enumerate}[(i)]
+\item  The initial steps are $\beta_1 := b_1$ and $\delta_1 := d_1$.
+\item Let $\epsilon_i := a_{i-1}/\beta_{i-1}$. The inductive step is:
+\begin{align*}
+\beta_i:=b_i-\epsilon_i c_{i-1},\quad \textrm{ and } \delta_i:=d_i-\epsilon_i \delta_{i-1},\quad \textrm{ for } i = 2,\ldots, n
+\end{align*}
+\end{enumerate}
+\end{alg}
+}
+
+
+\begin{rem}\label{flop} The number of floating point operations needed to run the above algorithm is $7(n-1)$. Indeed, (i) requires no floating point operations and there are $n-1$ steps left. In each step we need to do 2 times a calculation of the form $a-b*c$ and one times a calculation of the form $a/b$, yielding a total of 7.
+\end{rem}
+
+\Cref{eq:matrixeq} is now equivalent to the following set of linear equations in the variables $v_0,\ldots,v_{n+1}$:
+\begin{align*}
+\beta_{i-1}v_{i-1}+c_{i-1}v_i &= \delta_i,\quad \textrm{for }i=1,\ldots,n-1\\
+\beta_n v_n &= \delta_n
+\end{align*}
+
+
+\noindent The algorithm to solve these equations becomes:
+
+\begin{alg}\label{solveq}(Solve equations)
+\begin{enumerate}[(i)]
+\item The initial step is $v_n = \delta_n/\beta_n$.
+\item The inductive step is: $$v_i= \frac{\delta_{i+1}-c_iv_{i+1}}{\beta_i}, \quad \textrm{for } i=n-1,...,1$$
+\end{enumerate}
+\end{alg}
+\begin{rem} By a counting argument similar to the one in \cref{flop}, the number of floating point operations needed for the above algorithm is $1+3(n-1)$.
+\end{rem}
+
+\vbox{
+\subsection{The tridiagonal matrix equation for $-u''(x)=f(x)$}
+
+The special case we seek to solve is:
+
+$$A:=   \begin{pmatrix}
+   2 & -1 & 0 &\cdots   &0  \\
+   -1 & 2 & -1 &\ddots   & \vdots \\
+   0 & -1 & \ddots  &  \ddots   &0 \\
+   \vdots &  \ddots &\ddots & \ddots &-1 \\
+   0 & \cdots  &0  & -1  &2 \\
+  \end{pmatrix}
+\begin{pmatrix}
+v_1\\
+v_2\\
+\vdots\\
+\vdots\\
+v_n
+\end{pmatrix}
+=
+\begin{pmatrix}
+d_1\\
+d_2\\
+\vdots\\
+\vdots\\
+d_n
+\end{pmatrix}$$
+We can accomplish this by simplifying the algorithms described in \cref{generaltridiagmateq}. Note that $\epsilon_i = 1/2$ for all $i=2,\ldots,n$. Then row reducing $A$ immediately yields
+
+$$ \begin{pmatrix}
+   2 & -1 & 0 &\cdots   &0  \\
+   0 & 3 & -1 &\ddots   & \vdots \\
+   0 & 0 & \ddots  &  \ddots   &0 \\
+   \vdots &  \ddots &\ddots & \ddots &-1 \\
+   0 & \cdots  &0  & 0  &3 \\
+  \end{pmatrix},
+$$
+
+\noindent and we immediately know $\beta_i$ for all $i=1,\ldots, n$. Hence the number of floating point operations needed to perform this algorithm is reduced significantly from the general case. This is elaborated below.
+
+From \cref{rowred} we only need part (ii), which reads:
+$$\delta_i=d_i-\frac{1}{2}\delta_{i-1},\quad\textrm{for }i=2,\ldots,n$$
+\noindent The number of flops then becomes $2(n-1)$.
+
+From \cref{solveq} we get:
+\begin{enumerate}[(i)]
+\item $v_n = \delta_n/3$.
+\item $v_i= (\delta_{i+1}+v_{i+1})/3, \quad \textrm{for } i=n-1,...,1$
+\end{enumerate}
+\noindent which corresponds to $1+2(n-1)$ flops.
+}
+
+\end{document}
